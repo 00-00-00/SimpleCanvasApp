@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:id="@+id/a_square_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

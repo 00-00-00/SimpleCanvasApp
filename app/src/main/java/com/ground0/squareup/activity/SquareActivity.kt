@@ -30,6 +30,9 @@ class SquareActivity : BaseActivity() {
     private val rectangleBuilder = Rectangle.Builder()
     private val rectangles: ArrayList<Rectangle> = arrayListOf()
 
+    private var bitmap: Bitmap? = null
+    private var backUpBitmap: Bitmap? = null
+
     companion object {
         const val SIZE_MULTIPLIER = 5
         const val SIZE_STROKE_SIZE = 5F
@@ -88,7 +91,8 @@ class SquareActivity : BaseActivity() {
         return when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
                 rectangleBuilder.startVertices(motionEvent.x, motionEvent.y)
-                //TODO 2018 July 14: Draw the anchor
+                canvas?.let { drawCircle(imageView, it, motionEvent.x, motionEvent.y) }
+
                 seekBar.isEnabled = true
                 true
             }
@@ -97,7 +101,7 @@ class SquareActivity : BaseActivity() {
     }
 
     private fun initCanvas(imageView: ImageView): Canvas {
-        val bitmap = Bitmap.createBitmap(imageView.width, imageView.height, Bitmap.Config.ARGB_8888)
+        bitmap = Bitmap.createBitmap(imageView.width, imageView.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         imageView.setImageBitmap(bitmap)
         return canvas
@@ -111,6 +115,16 @@ class SquareActivity : BaseActivity() {
                     strokeWidth = SIZE_STROKE_SIZE
                 }
         canvas.drawRect(rectangle.toRectF(), paint)
+        imageView.invalidate()
+    }
+
+    private fun drawCircle(imageView: ImageView, canvas: Canvas, cX: Float, cY: Float) {
+        val paint = Paint()
+                .apply {
+                    style = Paint.Style.FILL
+                    color = PAINT_COLOUR
+                }
+        canvas.drawCircle(cX, cY, SIZE_STROKE_SIZE, paint)
         imageView.invalidate()
     }
 
