@@ -1,10 +1,8 @@
 package com.ground0.squareup.activity
 
 import android.app.AlertDialog
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.ImageView
@@ -16,6 +14,9 @@ import butterknife.OnTouch
 import com.ground0.squareup.R
 import com.ground0.squareup.core.BaseActivity
 import com.ground0.squareup.model.Rectangle
+import com.ground0.squareup.util.CanvasUtil.drawCircle
+import com.ground0.squareup.util.CanvasUtil.drawRectangle
+import com.ground0.squareup.util.CanvasUtil.getCanvas
 import com.ground0.squareup.view.SeekBarChangeCallback
 import com.ground0.squareup.view.SeekBarChangeListener
 
@@ -29,9 +30,6 @@ class SquareActivity : BaseActivity() {
     private var canvas: Canvas? = null
     private val rectangleBuilder = Rectangle.Builder()
     private val rectangles: ArrayList<Rectangle> = arrayListOf()
-
-    private var bitmap: Bitmap? = null
-    private var backUpBitmap: Bitmap? = null
 
     companion object {
         const val SIZE_MULTIPLIER = 5
@@ -67,14 +65,22 @@ class SquareActivity : BaseActivity() {
     @OnClick(R.id.a_square_button)
     fun onPrintButtonClick() {
         AlertDialog.Builder(this).create().apply {
-            setMessage(rectangles.joinToString(
-                    separator = ", \n",
-                    prefix = "[\n",
-                    postfix = "\n]",
-                    transform = {
-                        "{ coordinates : ${it.getAllSides().map { "(${it.first}, ${it.second}) }" }}"
-                    }
-            ))
+            setMessage(
+                    if (rectangles.isEmpty())
+                        "Nothing here! Touch the screen to draw a square"
+                    else
+                        rectangles.joinToString(
+                                separator = ", \n",
+                                prefix = "[\n",
+                                postfix = "\n]",
+                                transform = {
+                                    "{ coordinates : " +
+                                            "${it.getAllSides().map {
+                                                "(${it.first}, ${it.second})" +
+                                                        " }"
+                                            }}"
+                                }
+                        ))
             setButton(AlertDialog.BUTTON_POSITIVE, "Okay") { p0, p1 ->
                 //do nothing
             }
@@ -82,14 +88,9 @@ class SquareActivity : BaseActivity() {
         }
     }
 
-    private fun initSeekBar(seekBar: SeekBar, callback: SeekBarChangeCallback) {
-        seekBar.isEnabled = false
-        seekBar.setOnSeekBarChangeListener(SeekBarChangeListener(callback))
-    }
-
     @OnTouch(R.id.a_square_image)
     fun onImageTouch(view: ImageView, motionEvent: MotionEvent): Boolean {
-        canvas = canvas ?: initCanvas(imageView)
+        initCanvas()
         return when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
                 rectangleBuilder.startVertices(motionEvent.x, motionEvent.y)
@@ -102,32 +103,12 @@ class SquareActivity : BaseActivity() {
         }
     }
 
-    private fun initCanvas(imageView: ImageView): Canvas {
-        bitmap = Bitmap.createBitmap(imageView.width, imageView.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        imageView.setImageBitmap(bitmap)
-        return canvas
+    private fun initCanvas() {
+        canvas = canvas ?: getCanvas(imageView)
     }
 
-    private fun drawRectangle(imageView: ImageView, canvas: Canvas, rectangle: Rectangle) {
-        val paint = Paint()
-                .apply {
-                    style = Paint.Style.STROKE
-                    color = PAINT_COLOUR
-                    strokeWidth = SIZE_STROKE_SIZE
-                }
-        canvas.drawRect(rectangle.toRectF(), paint)
-        imageView.invalidate()
+    private fun initSeekBar(seekBar: SeekBar, callback: SeekBarChangeCallback) {
+        seekBar.isEnabled = false
+        seekBar.setOnSeekBarChangeListener(SeekBarChangeListener(callback))
     }
-
-    private fun drawCircle(imageView: ImageView, canvas: Canvas, cX: Float, cY: Float) {
-        val paint = Paint()
-                .apply {
-                    style = Paint.Style.FILL
-                    color = PAINT_COLOUR
-                }
-        canvas.drawCircle(cX, cY, SIZE_STROKE_SIZE, paint)
-        imageView.invalidate()
-    }
-
 }
