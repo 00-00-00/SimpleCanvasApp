@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SquareUp</string>
+
+    <string name="stats_for_nerds">Stats for Nerds</string>
 </resources>

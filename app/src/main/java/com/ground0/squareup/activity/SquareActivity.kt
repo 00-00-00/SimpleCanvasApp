@@ -1,5 +1,7 @@
 package com.ground0.squareup.activity
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -32,7 +34,7 @@ class SquareActivity : BaseActivity() {
     private val rectangles: ArrayList<Rectangle> = arrayListOf()
 
     companion object {
-        const val SIZE_MULTIPLIER = 20
+        const val SIZE_MULTIPLIER = 5
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +44,7 @@ class SquareActivity : BaseActivity() {
         initSeekBarListener(seekBar, object : SeekBarChangeCallback {
             override fun onFinish(progress: Int) {
 
-                seekBar.visibility = View.GONE
+//                seekBar.visibility = View.GONE  //Much simpler to use without seekBar appearing and disappearing
                 rectangleBuilder.sides((progress * SIZE_MULTIPLIER).toFloat(),
                         (progress * SIZE_MULTIPLIER).toFloat())
                 //save rectangle
@@ -50,6 +52,7 @@ class SquareActivity : BaseActivity() {
                     rectangles.add(rectangle)
                     canvas?.let { drawRectangle(imageView, it, rectangle) }
                 }
+                //choosing not to reset the seekBar
             }
 
             override fun onProgress(progress: Int) {
@@ -62,6 +65,13 @@ class SquareActivity : BaseActivity() {
     @OnClick(R.id.a_square_button)
     fun onPrintButtonClick() {
 
+        AlertDialog.Builder(this).create().apply {
+            setMessage("[${rectangles.joinToString { it.toString() }}]")
+            setButton(AlertDialog.BUTTON_POSITIVE, "Okay") { p0, p1 ->
+
+            }
+            show()
+        }
     }
 
     private fun initSeekBarListener(seekBar: SeekBar, callback: SeekBarChangeCallback) {
@@ -74,7 +84,8 @@ class SquareActivity : BaseActivity() {
         return when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
                 rectangleBuilder.startVertices(motionEvent.x, motionEvent.y)
-                seekBar.visibility = View.VISIBLE
+                //TODO 2018 July 14: Draw the anchor
+//                seekBar.visibility = View.VISIBLE
                 true
             }
             else -> false

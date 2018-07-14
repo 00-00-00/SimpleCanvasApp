@@ -9,7 +9,7 @@
         android:id="@+id/a_square_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/a_square_button"
+        app:layout_constraintBottom_toTopOf="@+id/a_square_seek"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -18,7 +18,7 @@
         android:id="@+id/a_square_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Test Test"
+        android:text="@string/stats_for_nerds"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -27,7 +27,6 @@
         android:id="@+id/a_square_seek"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/a_square_button"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

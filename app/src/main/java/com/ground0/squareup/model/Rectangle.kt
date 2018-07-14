@@ -4,10 +4,17 @@ import android.graphics.RectF
 
 class Rectangle {
 
+    enum class Anchor {
+        CENTER,
+        START
+    }
+
     var startX: Float? = null
     var startY: Float? = null
     var endX: Float? = null
     var endY: Float? = null
+
+    var anchorPointType: Anchor = Anchor.START
 
     fun toRectF(): RectF {
         val startX = startX
@@ -32,12 +39,22 @@ class Rectangle {
 
     class Builder {
         private val rectangle: Rectangle = Rectangle()
+
+        fun setAnchor(anchor: Anchor): Builder {
+            rectangle.anchorPointType = anchor
+            return this@Builder
+        }
+
         fun startVertices(x: Float, y: Float): Builder {
-            rectangle.apply { startX = x; startY = y }
+            if (rectangle.anchorPointType == Anchor.CENTER)
+                throw IllegalArgumentException("endVertices can only be used with Anchor.START")
+            rectangle.apply { startX = x; startY = y;}
             return this@Builder
         }
 
         fun endVertices(x: Float, y: Float): Builder {
+            if (rectangle.anchorPointType == Anchor.CENTER)
+                throw IllegalArgumentException("endVertices can only be used with Anchor.START")
             rectangle.apply { endX = x; endY = y }
             return this@Builder
         }
@@ -46,7 +63,8 @@ class Rectangle {
             val startX = rectangle.startX
             val startY = rectangle.startY
 
-            if (startX == null || startY == null) throw IllegalStateException("The start vertices are not set")
+            if (startX == null || startY == null)
+                throw IllegalStateException("The anchor vertices are not set")
 
             rectangle.apply {
                 endX = startX + length
