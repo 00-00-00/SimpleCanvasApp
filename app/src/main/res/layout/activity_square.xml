@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <ImageView
         android:id="@+id/a_square_image"
         android:layout_width="0dp"
@@ -15,6 +14,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
         android:id="@+id/a_square_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -23,10 +23,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <View
+        app:layout_constraintBottom_toTopOf="@id/a_square_seek"
+        android:background="@color/md_white_1000"
+        android:layout_width="match_parent"
+        android:layout_height="2dp" />
+
     <SeekBar
         android:id="@+id/a_square_seek"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/view_size_2"
         app:layout_constraintBottom_toTopOf="@+id/a_square_button"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

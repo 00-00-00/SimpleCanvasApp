@@ -35,7 +35,7 @@ class Rectangle {
     }
 
     override
-    fun toString(): String = "coordinates: (x1: $startX, y1: $startY), x2: $endX, y2: $endY"
+    fun toString(): String = "coordinates: (x1: $startX, y1: $startY), (x2: $endX, y2: $endY)"
 
     class Builder {
         private val rectangle: Rectangle = Rectangle()

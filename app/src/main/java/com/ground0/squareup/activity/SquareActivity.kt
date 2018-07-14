@@ -1,14 +1,12 @@
 package com.ground0.squareup.activity
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import butterknife.BindView
@@ -23,7 +21,6 @@ import com.ground0.squareup.view.SeekBarChangeListener
 
 class SquareActivity : BaseActivity() {
 
-
     @BindView(R.id.a_square_seek)
     lateinit var seekBar: SeekBar
     @BindView(R.id.a_square_image)
@@ -35,13 +32,15 @@ class SquareActivity : BaseActivity() {
 
     companion object {
         const val SIZE_MULTIPLIER = 5
+        const val SIZE_STROKE_SIZE = 5F
+        const val PAINT_COLOUR = Color.WHITE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_square)
         ButterKnife.bind(this)
-        initSeekBarListener(seekBar, object : SeekBarChangeCallback {
+        initSeekBar(seekBar, object : SeekBarChangeCallback {
             override fun onFinish(progress: Int) {
 
 //                seekBar.visibility = View.GONE  //Much simpler to use without seekBar appearing and disappearing
@@ -64,17 +63,22 @@ class SquareActivity : BaseActivity() {
 
     @OnClick(R.id.a_square_button)
     fun onPrintButtonClick() {
-
         AlertDialog.Builder(this).create().apply {
-            setMessage("[${rectangles.joinToString { it.toString() }}]")
+            setMessage(rectangles.joinToString(
+                    separator = ", \n",
+                    prefix = "[\n",
+                    postfix = "\n]",
+                    transform = { it.toString() }
+            ))
             setButton(AlertDialog.BUTTON_POSITIVE, "Okay") { p0, p1 ->
-
+                //do nothing
             }
             show()
         }
     }
 
-    private fun initSeekBarListener(seekBar: SeekBar, callback: SeekBarChangeCallback) {
+    private fun initSeekBar(seekBar: SeekBar, callback: SeekBarChangeCallback) {
+        seekBar.isEnabled = false
         seekBar.setOnSeekBarChangeListener(SeekBarChangeListener(callback))
     }
 
@@ -85,7 +89,7 @@ class SquareActivity : BaseActivity() {
             MotionEvent.ACTION_DOWN -> {
                 rectangleBuilder.startVertices(motionEvent.x, motionEvent.y)
                 //TODO 2018 July 14: Draw the anchor
-//                seekBar.visibility = View.VISIBLE
+                seekBar.isEnabled = true
                 true
             }
             else -> false
@@ -93,21 +97,20 @@ class SquareActivity : BaseActivity() {
     }
 
     private fun initCanvas(imageView: ImageView): Canvas {
-        val bitmap = Bitmap.createBitmap(imageView.width, imageView.height, Bitmap.Config.ALPHA_8)
+        val bitmap = Bitmap.createBitmap(imageView.width, imageView.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         imageView.setImageBitmap(bitmap)
         return canvas
     }
 
     private fun drawRectangle(imageView: ImageView, canvas: Canvas, rectangle: Rectangle) {
-
-        canvas.drawRect(rectangle.toRectF(), Paint()
+        val paint = Paint()
                 .apply {
                     style = Paint.Style.STROKE
-                    color = Color.BLUE
-                    strokeWidth = 5F //NO MAGIC NUMBERS!!
-                })
-
+                    color = PAINT_COLOUR
+                    strokeWidth = SIZE_STROKE_SIZE
+                }
+        canvas.drawRect(rectangle.toRectF(), paint)
         imageView.invalidate()
     }
 
