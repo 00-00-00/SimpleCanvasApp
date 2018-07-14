@@ -71,7 +71,9 @@ class SquareActivity : BaseActivity() {
                     separator = ", \n",
                     prefix = "[\n",
                     postfix = "\n]",
-                    transform = { it.toString() }
+                    transform = {
+                        "{ coordinates : ${it.getAllSides().map { "(${it.first}, ${it.second}) }" }}"
+                    }
             ))
             setButton(AlertDialog.BUTTON_POSITIVE, "Okay") { p0, p1 ->
                 //do nothing
