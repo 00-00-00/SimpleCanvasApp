@@ -1,17 +1,22 @@
-package com.ground0.squareup
+package com.ground0.squareup.activity
 
 import android.annotation.SuppressLint
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.ImageView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.ground0.squareup.R
+import com.ground0.squareup.core.BaseActivity
+import com.ground0.squareup.model.Rectangle
+import com.ground0.squareup.view.TouchCallback
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     @BindView(R.id.a_main_canvas)
     lateinit var imageView: ImageView
@@ -31,11 +36,11 @@ class MainActivity : AppCompatActivity() {
         initTouchInterception(imageView, object : TouchCallback {
             override fun onStart(x: Float, y: Float) {
                 canvas = canvas ?: initCanvas(imageView)
-                rectangleBuilder.startRectangle(x, y)
+                rectangleBuilder.startVertices(x, y)
             }
 
             override fun onStop(x: Float, y: Float) {
-                rectangleBuilder.finishRectangle(x, y)
+                rectangleBuilder.endVertices(x, y)
                 //save rectangle
                 rectangleBuilder.build().also { rectangle ->
                     rectangles.add(rectangle)
@@ -80,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun drawRectangle(imageView: ImageView, canvas: Canvas, rectangle: Rectangle) {
 
-        canvas.drawRect(rectangle.getRect(), Paint()
+        canvas.drawRect(rectangle.toRectF(), Paint()
                 .apply {
                     style = Paint.Style.STROKE
                     color = Color.BLUE
@@ -90,43 +95,4 @@ class MainActivity : AppCompatActivity() {
         imageView.invalidate()
     }
 
-}
-
-interface TouchCallback {
-    fun onStart(x: Float, y: Float)
-    fun onStop(x: Float, y: Float)
-}
-
-class Rectangle {
-    private var startX: Float? = null
-    private var startY: Float? = null
-    private var endX: Float? = null
-    private var endY: Float? = null
-
-    fun getRect(): RectF {
-        val startX = startX
-        val startY = startY
-        val endX = endX
-        val endY = endY
-        if (startX == null || startY == null || endX == null || endY == null) throw IllegalStateException("The vertices of the rectangle are not set")
-        return RectF(startX, startY, endX, endY)
-    }
-
-    class Builder {
-        private val rectangle: Rectangle = Rectangle()
-        fun startRectangle(x: Float, y: Float): Builder {
-            rectangle.apply { startX = x; startY = y }
-            return this@Builder
-        }
-
-        fun finishRectangle(x: Float, y: Float): Builder {
-            rectangle.apply { endX = x; endY = y }
-            return this@Builder
-        }
-
-        fun build(): Rectangle {
-            //Add validation and throw exception
-            return rectangle
-        }
-    }
 }
